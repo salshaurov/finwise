@@ -114,8 +114,11 @@ public class AlphaVantage {
                                 + url);
             }
 
+            if (response.body() == null) {
+                throw new IOException("AlphaVantage returned an empty response body");
+            }
+
             final String responseBody = response.body().string();
-            System.out.println("DEBUG searchStocks response = " + responseBody);
 
             final JsonObject json;
             try {
@@ -143,7 +146,7 @@ public class AlphaVantage {
     public StockQuote getQuote(final String symbol) throws IOException {
         final String url = BASE_URL
             + "?function=GLOBAL_QUOTE&symbol="
-                + symbol
+                + URLEncoder.encode(symbol, StandardCharsets.UTF_8)
                 + API_KEY_PARAM
                 + API_KEY;
 
@@ -223,7 +226,7 @@ public class AlphaVantage {
                 + "?function="
                 + function
                 + "&symbol="
-                + symbol
+                + URLEncoder.encode(symbol, StandardCharsets.UTF_8)
                 + API_KEY_PARAM
                 + API_KEY;
 

@@ -110,7 +110,12 @@ public class AddExpenseInteractor {
     private Double parseAmount(String amountText) {
         Double result = null;
         try {
-            result = Double.parseDouble(amountText);
+            final double parsedAmount = Double.parseDouble(amountText);
+            // Expenses are money leaving the account, so reject values that
+            // cannot represent a real, non-negative amount.
+            if (Double.isFinite(parsedAmount) && parsedAmount >= 0) {
+                result = parsedAmount;
+            }
         }
         catch (NumberFormatException event) {
             // return null to signal invalid amount

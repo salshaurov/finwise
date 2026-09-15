@@ -12,10 +12,12 @@ public class InMemoryTradingDataAccess implements TradingDataAccessInterface{
 
     private final Map<String, Double> userCash;
     private final Map<String, Map<String, Holding>> userHoldings;
+    private final List<OrderRecord> orderRecords;
 
     public InMemoryTradingDataAccess() {
         this.userCash = new HashMap<>();
         this.userHoldings = new HashMap<>();
+        this.orderRecords = new ArrayList<>();
     }
 
     @Override
@@ -69,14 +71,17 @@ public class InMemoryTradingDataAccess implements TradingDataAccessInterface{
         return h == null ? new ArrayList<>() : new ArrayList<>(h.values());
     }
 
-    // do nothing for in-memory
     @Override
     public void saveOrder(OrderRecord orderRecord) {
-
+        // Keep order history in memory so the adapter behaves like the
+        // persistent implementation during local runs and tests.
+        orderRecords.add(orderRecord);
     }
 
     @Override
     public List<OrderRecord> findOrdersByUser(String username) {
-        return new ArrayList<>();
+        return orderRecords.stream()
+                .filter(order -> Objects.equals(order.getUsername(), username))
+                .toList();
     }
 }

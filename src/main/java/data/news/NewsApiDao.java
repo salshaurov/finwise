@@ -49,8 +49,18 @@ public class NewsApiDao implements NewsDataAccessInterface {
                 throw new IOException("Failed to fetch news: " + response);
             }
 
+            if (response.body() == null) {
+                throw new IOException("News API returned an empty response body");
+            }
+
             final String body = response.body().string();
-            final JsonObject json = gson.fromJson(body, JsonObject.class);
+            final JsonElement payload = gson.fromJson(body, JsonElement.class);
+            // An empty or scalar payload is not a valid news response. Turn it
+            // into the same domain error as other malformed API responses.
+            if (payload == null || !payload.isJsonObject()) {
+                throw new JsonParseException("News API response was not a JSON object");
+            }
+            final JsonObject json = payload.getAsJsonObject();
 
             // test the api limit
             if (json.has("Information")) {
@@ -65,9 +75,9 @@ public class NewsApiDao implements NewsDataAccessInterface {
             if (feed != null) {
                 for (JsonElement elem : feed) {
                     final JsonObject newsObj = elem.getAsJsonObject();
-                    final String title = newsObj.get("title").getAsString();
-                    final String url = newsObj.get("url").getAsString();
-                    final String timeStr = newsObj.get("time_published").getAsString();
+                    final String title = requiredString(newsObj, "title");
+                    final String url = requiredString(newsObj, "url");
+                    final String timeStr = requiredString(newsObj, "time_published");
 
                     // adjust the time format
                     final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss");
@@ -83,6 +93,14 @@ public class NewsApiDao implements NewsDataAccessInterface {
         }
 
         return newsList;
+    }
+
+    private String requiredString(JsonObject object, String fieldName) {
+        final JsonElement value = object.get(fieldName);
+        if (value == null || value.isJsonNull()) {
+            throw new JsonParseException("News item is missing '" + fieldName + "'");
+        }
+        return value.getAsString();
     }
 
 }
