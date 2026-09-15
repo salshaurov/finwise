@@ -1,0 +1,88 @@
+{
+  "userCash": {
+    "1234567": 4770.4,
+    "wei": 7735.2
+  },
+  "userHoldings": {
+    "wei": {
+      "AAPL": {
+        "symbol": "AAPL",
+        "shares": 8,
+        "avgCost": 283.1
+      }
+    },
+    "1234567": {
+      "aapl": {
+        "symbol": "aapl",
+        "shares": 2,
+        "avgCost": 278.85
+      },
+      "nvda": {
+        "symbol": "nvda",
+        "shares": 12,
+        "avgCost": 177.0
+      },
+      "AAPL": {
+        "symbol": "AAPL",
+        "shares": 9,
+        "avgCost": 283.1
+      }
+    }
+  },
+  "orderRecords": [
+    {
+      "timestamp": "2025-11-30T22:21:55.325221Z",
+      "username": "1234567",
+      "symbol": "aapl",
+      "action": "BUY",
+      "shares": 2,
+      "price": 278.85,
+      "totalAmount": 557.7
+    },
+    {
+      "timestamp": "2025-11-30T22:22:03.524917Z",
+      "username": "1234567",
+      "symbol": "aapl",
+      "action": "SELL",
+      "shares": 1,
+      "price": 278.85,
+      "totalAmount": 278.85
+    },
+    {
+      "timestamp": "2025-11-30T22:23:29.622006Z",
+      "username": "1234567",
+      "symbol": "nvda",
+      "action": "BUY",
+      "shares": 6,
+      "price": 177.0,
+      "totalAmount": 1062.0
+    },
+    {
+      "timestamp": "2025-12-02T07:26:07.184625Z",
+      "username": "1234567",
+      "symbol": "AAPL",
+      "action": "BUY",
+      "shares": 10,
+      "price": 283.1,
+      "totalAmount": 2831.0
+    },
+    {
+      "timestamp": "2025-12-02T07:26:12.839823Z",
+      "username": "1234567",
+      "symbol": "AAPL",
+      "action": "SELL",
+      "shares": 1,
+      "price": 283.1,
+      "totalAmount": 283.1
+    },
+    {
+      "timestamp": "2025-12-02T19:09:58.501269700Z",
+      "username": "wei",
+      "symbol": "AAPL",
+      "action": "BUY",
+      "shares": 8,
+      "price": 283.1,
+      "totalAmount": 2264.8
+    }
+  ]
+}
