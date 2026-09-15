@@ -85,6 +85,15 @@ public class AlphaVantage {
     }
 
     /**
+     * Creates an API client with a caller-provided HTTP client.
+     *
+     * @param clientParam the HTTP client used for requests
+     */
+    public AlphaVantage(final OkHttpClient clientParam) {
+        this.client = clientParam;
+    }
+
+    /**
      * Search for stocks using SYMBOL_SEARCH endpoint.
      *
      * @param keywords the search keywords
@@ -114,8 +123,11 @@ public class AlphaVantage {
                                 + url);
             }
 
+            if (response.body() == null) {
+                throw new IOException("AlphaVantage returned an empty response body");
+            }
+
             final String responseBody = response.body().string();
-            System.out.println("DEBUG searchStocks response = " + responseBody);
 
             final JsonObject json;
             try {
@@ -143,7 +155,7 @@ public class AlphaVantage {
     public StockQuote getQuote(final String symbol) throws IOException {
         final String url = BASE_URL
             + "?function=GLOBAL_QUOTE&symbol="
-                + symbol
+                + URLEncoder.encode(symbol, StandardCharsets.UTF_8)
                 + API_KEY_PARAM
                 + API_KEY;
 
@@ -156,9 +168,17 @@ public class AlphaVantage {
                 throw new IOException("Unexpected code " + response);
             }
 
+            if (response.body() == null) {
+                throw new IOException("AlphaVantage returned an empty response body");
+            }
+
             final String responseBody = response.body().string();
-            final JsonObject json =
-                    JsonParser.parseString(responseBody).getAsJsonObject();
+            final com.google.gson.JsonElement payload =
+                    JsonParser.parseString(responseBody);
+            if (!payload.isJsonObject()) {
+                throw new IOException("AlphaVantage returned an invalid JSON object");
+            }
+            final JsonObject json = payload.getAsJsonObject();
 
             if (json.has(JSON_FIELD_NOTE)) {
                 throw new IOException(
@@ -202,7 +222,9 @@ public class AlphaVantage {
         final String function;
         switch (interval) {
             case "1D":
-                function = "TIME_SERIES_INTRADAY&interval=5min";
+                // Intraday data is a premium Alpha Vantage endpoint. Daily
+                // data keeps the default chart usable with the free key.
+                function = "TIME_SERIES_DAILY";
                 break;
             case "5D":
             case "1M":
@@ -223,7 +245,7 @@ public class AlphaVantage {
                 + "?function="
                 + function
                 + "&symbol="
-                + symbol
+                + URLEncoder.encode(symbol, StandardCharsets.UTF_8)
                 + API_KEY_PARAM
                 + API_KEY;
 
@@ -236,9 +258,17 @@ public class AlphaVantage {
                 throw new IOException("Unexpected code " + response);
             }
 
+            if (response.body() == null) {
+                throw new IOException("AlphaVantage returned an empty response body");
+            }
+
             final String responseBody = response.body().string();
-            final JsonObject json =
-                    JsonParser.parseString(responseBody).getAsJsonObject();
+            final com.google.gson.JsonElement payload =
+                    JsonParser.parseString(responseBody);
+            if (!payload.isJsonObject()) {
+                throw new IOException("AlphaVantage returned an invalid JSON object");
+            }
+            final JsonObject json = payload.getAsJsonObject();
 
             if (json.has(JSON_FIELD_NOTE)) {
                 throw new IOException(

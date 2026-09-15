@@ -154,6 +154,24 @@ public class FetchNewsInteractorTest {
         });
     }
 
+        @Test
+        public void daoNullJsonPayloadTest() {
+        OkHttpClient mockClient = new OkHttpClient.Builder()
+            .addInterceptor(chain -> new Response.Builder()
+                .code(200)
+                .message("OK")
+                .request(chain.request())
+                .protocol(Protocol.HTTP_1_1)
+                .body(ResponseBody.create("null", MediaType.get("application/json")))
+                .build())
+            .build();
+
+        NewsApiDao dao = new NewsApiDao(mockClient);
+
+        assertThrows(NewsDataAccessInterface.DataFetchException.class,
+            () -> dao.fetchNews("general"));
+        }
+
 
     @Test
     public void daoNetworkExceptionTest() {

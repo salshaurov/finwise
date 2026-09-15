@@ -168,6 +168,18 @@ class AddExpenseInteractorTest {
         assertFalse(fakeRepo.addCalled);
     }
 
+    @Test
+    void testAddExpenseRejectsNegativeAndNonFiniteAmounts() {
+        for (String amount : new String[] {"-1.00", "NaN", "Infinity"}) {
+            AddExpenseOutputData output = interactor.execute(new AddExpenseInputData(
+                    "alice", "2025-11-30 14:30", "Food", amount));
+
+            assertFalse(output.isSuccess(), "Amount should be rejected: " + amount);
+            assertEquals("Please enter a valid number!", output.getMessage());
+            assertFalse(fakeRepo.addCalled, "Repository should not receive: " + amount);
+        }
+    }
+
     /**
      * Repository throws exception -> fail with "Failed to add expense!".
      */
